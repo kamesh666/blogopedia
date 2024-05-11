@@ -1,6 +1,23 @@
+"use client";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Home() {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    console.log(process.env.API_URL); // Check the API_URL value
+    axios
+      .get("/api/posts")
+      .then((response) => {
+        setPosts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error); 
+      });
+  }, []);
+
   return (
     <>
       <main className="container mx-auto px-4 py-6">
@@ -21,39 +38,19 @@ export default function Home() {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="border border-gray-200 p-4">
-          <img
-            className="w-full h-48 object-cover mb-4"
-            src="https://picsum.photos/200"
-            alt="Post Image"
-          />
-          <h2 className="text-xl font-semibold mb-2">Post Title 1</h2>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>
-        </div>
-        <div className="border border-gray-200 p-4">
-          <img
-            className="w-full h-48 object-cover mb-4"
-            src="https://picsum.photos/200"
-            alt="Post Image"
-          />
-          <h2 className="text-xl font-semibold mb-2">Post Title 2</h2>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>
-        </div>
-        <div className="border border-gray-200 p-4">
-          <img
-            className="w-full h-48 object-cover mb-4"
-            src="https://picsum.photos/200"
-            alt="Post Image"
-          />
-          <h2 className="text-xl font-semibold mb-2">Post Title 3</h2>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>
-        </div>
+        {posts.map((post) => (
+          <div key={post.id} className="border border-gray-200 p-4">
+            <Image
+              src={post.image}
+              className="w-full h-48 object-cover mb-4"
+              alt="Post Image"
+              width="200"
+              height="200"
+            />
+            <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+            <p className="text-gray-600">{post.description}</p>
+          </div>
+        ))}
       </div>
     </>
   );
